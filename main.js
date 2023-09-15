@@ -130,7 +130,7 @@ const crawler = new PlaywrightCrawler({
   async requestHandler({ request, response, page, enqueueLinks }) {
     const title = await page.title();
     console.log(`Crawled ${request.loadedUrl}`);
-    await Actor.pushData({
+    await dataset.pushData({
       title,
       public_url: request.loadedUrl,
       title: await page.title(),
