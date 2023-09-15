@@ -32,7 +32,7 @@ async function downloadFile(url) {
   const state = await crawler.useState("downloadedFiles", {
     downloadedFiles: [],
   });
-  if (state.downloadFiles.indexOf(url) != -1) {
+  if (state.downloadedFiles.indexOf(url) != -1) {
     console.log(`Skipping already downloaded file: ${url}`);
     return;
   }
