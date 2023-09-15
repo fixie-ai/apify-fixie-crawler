@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "dependencies": {
         "apify": "^3.1.10",
+        "crawlee": "^3.5.4",
         "got": "^13.0.0"
     },
     "type": "module",
