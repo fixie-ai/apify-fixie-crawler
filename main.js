@@ -1,3 +1,10 @@
+/**
+ * This is an Apify Actor (using the Apify v3 SDK, based on crawlee) for crawling
+ * web content. It extracts the body, title, and other metadata from pages it crawls.
+ * In addition, it handles PDF files by downloading the raw data and saving it as
+ * base64-encoded data to the dataset.
+ */
+
 import { Actor } from "apify";
 import { PlaywrightCrawler } from "crawlee";
 import got from "got";
@@ -34,8 +41,10 @@ if (!includeGlobPatterns || includeGlobPatterns.length == 0) {
   console.warn(
     'Empty includeGlobPatterns - setting excludeGlobPatterns to "**"'
   );
-  includeGlobPatterns = [{ glob: "unused" }]; // We must set this for excludeGlobPatterns to work.
   excludeGlobPatterns = [{ glob: "**" }];
+  // We need to set includeGlobPatterns to a nonempty value for enqueueLinks() to consider
+  // excludeGlobPatterns as well.
+  includeGlobPatterns = [{ glob: "unused" }];
 }
 
 const dataset = await Actor.openDataset(datasetName);
@@ -56,6 +65,7 @@ async function downloadFile(crawler, url) {
       content: b64Data,
       mimeType: response.headers["content-type"],
       contentLength: response.headers["content-length"],
+      encoding: "base64",
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -135,15 +145,6 @@ const crawler = new PlaywrightCrawler({
     // Only follow links if we have not reached the max crawl depth.
     const curDepth = request.userData?.depth || 0;
     if (curDepth < maxCrawlDepth) {
-      console.log(
-        `Using includeGlobPatterns: ${JSON.stringify(includeGlobPatterns)}`
-      );
-      console.log(
-        `Using excludeGlobPatterns: ${JSON.stringify(excludeGlobPatterns)}`
-      );
-
-      // What in the hell is going on here?
-      // https://github.com/apify/crawlee/blob/0ef6bb1a33c576bf226b8922428b38e798ddd1e7/packages/core/src/enqueue_links/enqueue_links.ts#L359
       const enqueued = await enqueueLinks({
         strategy: "all",
         globs: includeGlobPatterns,
