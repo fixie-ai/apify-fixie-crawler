@@ -128,13 +128,16 @@ const crawler = new PlaywrightCrawler({
     // headless browser does not support file downloads. For now, we try to download
     // any file that might be a PDF and add it to the dataset.
     const state = await crawler.useState({ downloadedFiles: [] });
-    if (state.downloadedFiles && state.downloadedFiles.indexOf(url) != -1) {
-      console.log(`Skipping already downloaded file: ${url}`);
+    if (
+      state.downloadedFiles &&
+      state.downloadedFiles.indexOf(request.url) != -1
+    ) {
+      console.log(`Skipping already downloaded file: ${request.url}`);
       return;
     }
     if (request.url.match(/\.pdf$/)) {
       await downloadFile(crawler, request.url);
-      state.downloadedFiles.push(url);
+      state.downloadedFiles.push(request.url);
       request.noRetry = true; // Don't retry this request.
     }
   },
