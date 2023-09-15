@@ -99,6 +99,9 @@ async function getMimeType(response) {
 
 /** This is the main crawler. */
 const crawler = new PlaywrightCrawler({
+  // Maximum number of pages to crawl.
+  maxRequestsPerCrawl: maxCrawlPages,
+
   // This handler is called on each page navigation.
   async requestHandler({ request, response, page, enqueueLinks }) {
     const title = await page.title();
@@ -115,10 +118,17 @@ const crawler = new PlaywrightCrawler({
       timestamp: new Date().toISOString(),
     });
 
-    await enqueueLinks({
-      globs: includeGlobPatterns,
-      exclude: excludeGlobPatterns,
-    });
+    // Only follow links if we have not reached the max crawl depth.
+    const curDepth = request.userData?.depth || 0;
+    if (curDepth < maxCrawlDepth) {
+      await enqueueLinks({
+        globs: includeGlobPatterns,
+        exclude: excludeGlobPatterns,
+        userData: { depth: curDepth + 1 },
+      });
+    } else {
+      console.log(`Exceeded max crawl depth ${curDepth} - not following links`);
+    }
   },
 
   // This handler is called when there's an error on the headless browser navigating
@@ -127,6 +137,8 @@ const crawler = new PlaywrightCrawler({
     // If there is an error fetching a URL, it might be because the underlying
     // headless browser does not support file downloads. For now, we try to download
     // any file that might be a PDF and add it to the dataset.
+
+    // Avoid downloading files multiple times.
     const state = await crawler.useState({ downloadedFiles: [] });
     if (
       state.downloadedFiles &&
