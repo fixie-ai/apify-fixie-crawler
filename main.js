@@ -149,7 +149,7 @@ const crawler = new PlaywrightCrawler({
         exclude: excludeGlobPatterns,
         userData: { depth: curDepth + 1 },
       });
-      console.log(`ENQUEUED: ${JSON.stringify(enqueued)}`);
+      console.log(`ENQUEUED: ${JSON.stringify(enqueued, null, 2)}`);
     } else {
       console.warn(
         `Exceeded max crawl depth ${curDepth} - not following links`
