@@ -24,6 +24,15 @@ console.log(
   `Requested excludeGlobPatterns is ${JSON.stringify(excludeGlobPatterns)}`
 );
 
+if (!includeGlobPatterns || includeGlobPatterns.length == 0) {
+  // Apify requires that glob patterns be non-empty, so the only way to express
+  // an empty include-glob set is to set excludePatterns to "**".
+  console.log(
+    'Empty includeGlobPatterns - setting excludeGlobPatterns to ["**"]'
+  );
+  excludeGlobPatterns = ["**"];
+}
+
 const dataset = await Actor.openDataset(datasetName);
 
 /** Download the raw file from the given URL and save to the dataset. */
@@ -122,6 +131,7 @@ const crawler = new PlaywrightCrawler({
     const curDepth = request.userData?.depth || 0;
     if (curDepth < maxCrawlDepth) {
       await enqueueLinks({
+        strategy: "all",
         globs: includeGlobPatterns,
         exclude: excludeGlobPatterns,
         userData: { depth: curDepth + 1 },
