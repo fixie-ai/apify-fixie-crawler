@@ -145,13 +145,12 @@ const crawler = new PlaywrightCrawler({
     // Only follow links if we have not reached the max crawl depth.
     const curDepth = request.userData?.depth || 0;
     if (curDepth < maxCrawlDepth) {
-      const enqueued = await enqueueLinks({
+      await enqueueLinks({
         strategy: "all",
         globs: includeGlobPatterns,
         exclude: excludeGlobPatterns,
         userData: { depth: curDepth + 1 },
       });
-      console.log(`ENQUEUED: ${JSON.stringify(enqueued, null, 2)}`);
     } else {
       console.warn(
         `Exceeded max crawl depth ${curDepth} - not following links`
