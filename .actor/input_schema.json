@@ -7,14 +7,14 @@
         "startUrls": {
             "title": "Start URLs",
             "type": "array",
-            "description": "One or more URLs of the pages where the crawler will start. Note that the Actor will additionally only crawl sub-pages of these URLs. For example, for the start URL `https://www.example.com/blog`, it will crawl pages like `https://example.com/blog/article-1`, but will skip `https://example.com/docs/something-else`."
+            "description": "One or more URLs of the pages where the crawler will start. Note that the Actor will additionally only crawl sub-pages of these URLs. For example, for the start URL `https://www.example.com/blog`, it will crawl pages like `https://example.com/blog/article-1`, but will skip `https://example.com/docs/something-else`.",
+            "prefill": [{ "url": "http://example.com" }],
+            "editor": "requestListSources"
         },
         "datasetName": {
             "title": "Dataset name",
             "type": "string",
-            "description": "Name of the Apify Dataset to store results to.",
-            "minimum": 0,
-            "default": 20
+            "description": "Name of the Apify Dataset to store results to."
         },
         "maxCrawlDepth": {
             "title": "Max crawling depth",
