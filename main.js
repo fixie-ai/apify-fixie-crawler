@@ -8,7 +8,9 @@ const { startUrls, datasetName } = await Actor.getInput();
 console.log(`Requested dataset name is ${datasetName}`);
 const dataset = await Actor.openDataset(datasetName);
 
-async function fetchUrl(url) {
+/** Download the raw file from the given URL and save to the dataset. */
+async function downloadFile(url) {
+  console.log(`Downloading file: ${url}`);
   try {
     const response = await got(url);
     if (!response || !response.ok) {
@@ -31,6 +33,7 @@ async function fetchUrl(url) {
   }
 }
 
+/** This is the main crawler. */
 const crawler = new PlaywrightCrawler({
   async requestHandler({ request, page, enqueueLinks }) {
     const title = await page.title();
@@ -38,9 +41,11 @@ const crawler = new PlaywrightCrawler({
     await Actor.pushData({ title, public_url: request.loadedUrl });
     await enqueueLinks();
   },
-
-  async failedRequestHandler({ request }) {
-    console.log(`MDW: Request ${request.url} failed too many times`);
+  async browserErrorHandler({ request }) {
+    // Call downloadFile if the URL matches .pdf
+    if (request.url.match(/\.pdf$/)) {
+      await downloadFile(request.url);
+    }
   },
 });
 
