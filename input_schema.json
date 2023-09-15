@@ -1,0 +1,34 @@
+{
+    "title": "Input schema for Fixie Corpus Crawler",
+    "description": "Enter the start URL(s) of the website(s) to crawl, configure other optional settings, and run the Actor to crawl the pages and extract their text content.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "One or more URLs of the pages where the crawler will start. Note that the Actor will additionally only crawl sub-pages of these URLs. For example, for the start URL `https://www.example.com/blog`, it will crawl pages like `https://example.com/blog/article-1`, but will skip `https://example.com/docs/something-else`."
+        },
+        "datasetName": {
+            "title": "Dataset name",
+            "type": "string",
+            "description": "Name of the Apify Dataset to store results to.",
+            "minimum": 0,
+            "default": 20
+        },
+        "maxCrawlDepth": {
+            "title": "Max crawling depth",
+            "type": "integer",
+            "description": "The maximum number of links starting from the start URL that the crawler will recursively descend. The start URLs have a depth of 0, the pages linked directly from the start URLs have a depth of 1, and so on.\n\nThis setting is useful to prevent accidental crawler runaway. By setting it to 0, the Actor will only crawl start URLs.",
+            "minimum": 0,
+            "default": 20
+        },
+        "maxCrawlPages": {
+            "title": "Max pages",
+            "type": "integer",
+            "description": "The maximum number pages to crawl. It includes the start URLs, pagination pages, pages with no content, etc. The crawler will automatically finish after reaching this number. This setting is useful to prevent accidental crawler runaway.",
+            "minimum": 0,
+            "default": 9999999
+        }
+    }
+}

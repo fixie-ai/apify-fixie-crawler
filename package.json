@@ -1,0 +1,12 @@
+{
+    "name": "apify-fixie-crawler",
+    "version": "0.0.1",
+    "dependencies": {
+        "apify": "^3.1.10",
+        "got": "^13.0.0"
+    },
+    "type": "module",
+    "scripts": {
+        "start": "node main.js"
+    }
+}
