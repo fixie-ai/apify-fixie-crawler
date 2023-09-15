@@ -127,10 +127,8 @@ const crawler = new PlaywrightCrawler({
     // If there is an error fetching a URL, it might be because the underlying
     // headless browser does not support file downloads. For now, we try to download
     // any file that might be a PDF and add it to the dataset.
-    const state = await crawler.useState("downloadedFiles", {
-      downloadedFiles: [],
-    });
-    if (state.downloadedFiles.indexOf(url) != -1) {
+    const state = await crawler.useState({ downloadedFiles: [] });
+    if (state.downloadedFiles && state.downloadedFiles.indexOf(url) != -1) {
       console.log(`Skipping already downloaded file: ${url}`);
       return;
     }
