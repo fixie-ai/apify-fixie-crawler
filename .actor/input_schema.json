@@ -18,7 +18,7 @@
             "prefill": [ "http://docs.ai-jsx.com/**" ],
             "editor": "globs"
         },
-        "includeGlobPatterns": {
+        "excludeGlobPatterns": {
             "title": "Exclude glob patterns",
             "type": "array",
             "description": "Glob patterns of URLs to exclude from the crawl",
