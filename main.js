@@ -24,13 +24,17 @@ console.log(
   `Requested excludeGlobPatterns is ${JSON.stringify(excludeGlobPatterns)}`
 );
 
+// Note: Deep inside Crawlee, the `minimatch` library is used for glob matching,
+// with `{ nocase: true }` as the default options.
+// https://github.com/isaacs/minimatch
+
 if (!includeGlobPatterns || includeGlobPatterns.length == 0) {
   // Apify requires that glob patterns be non-empty, so the only way to express
   // an empty include-glob set is to set excludePatterns to "**".
   console.warn(
-    'Empty includeGlobPatterns - setting excludeGlobPatterns to ["**"]'
+    'Empty includeGlobPatterns - setting excludeGlobPatterns to "**"'
   );
-  excludeGlobPatterns = ["**"];
+  excludeGlobPatterns = [{ glob: "**" }];
 }
 
 const dataset = await Actor.openDataset(datasetName);
