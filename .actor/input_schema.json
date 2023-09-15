@@ -8,8 +8,22 @@
             "title": "Start URLs",
             "type": "array",
             "description": "One or more URLs of the pages where the crawler will start. Note that the Actor will additionally only crawl sub-pages of these URLs. For example, for the start URL `https://www.example.com/blog`, it will crawl pages like `https://example.com/blog/article-1`, but will skip `https://example.com/docs/something-else`.",
-            "prefill": [{ "url": "http://example.com" }],
+            "prefill": [{ "url": "http://docs.ai-jsx.com" }],
             "editor": "requestListSources"
+        },
+        "includeGlobPatterns": {
+            "title": "Include glob patterns",
+            "type": "array",
+            "description": "Glob patterns of URLs to include in the crawl",
+            "prefill": [ "http://docs.ai-jsx.com/**" ],
+            "editor": "globs"
+        },
+        "includeGlobPatterns": {
+            "title": "Exclude glob patterns",
+            "type": "array",
+            "description": "Glob patterns of URLs to exclude from the crawl",
+            "prefill": [ "*.pdf" ],
+            "editor": "globs"
         },
         "datasetName": {
             "title": "Dataset name",
