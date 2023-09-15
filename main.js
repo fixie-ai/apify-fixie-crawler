@@ -140,12 +140,16 @@ const crawler = new PlaywrightCrawler({
       console.log(
         `Using excludeGlobPatterns: ${JSON.stringify(excludeGlobPatterns)}`
       );
-      await enqueueLinks({
+
+      // What in the hell is going on here?
+      // https://github.com/apify/crawlee/blob/0ef6bb1a33c576bf226b8922428b38e798ddd1e7/packages/core/src/enqueue_links/enqueue_links.ts#L359
+      const enqueued = await enqueueLinks({
         strategy: "all",
         globs: includeGlobPatterns,
         exclude: excludeGlobPatterns,
         userData: { depth: curDepth + 1 },
       });
+      console.log(`ENQUEUED: ${JSON.stringify(enqueued)}`);
     } else {
       console.warn(
         `Exceeded max crawl depth ${curDepth} - not following links`
