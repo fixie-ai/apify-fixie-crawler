@@ -14,7 +14,8 @@
         "datasetName": {
             "title": "Dataset name",
             "type": "string",
-            "description": "Name of the Apify Dataset to store results to."
+            "description": "Name of the Apify Dataset to store results to.",
+            "editor": "json"
         },
         "maxCrawlDepth": {
             "title": "Max crawling depth",
