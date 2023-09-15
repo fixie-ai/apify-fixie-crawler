@@ -130,6 +130,12 @@ const crawler = new PlaywrightCrawler({
     // Only follow links if we have not reached the max crawl depth.
     const curDepth = request.userData?.depth || 0;
     if (curDepth < maxCrawlDepth) {
+      console.log(
+        `Using includeGlobPatterns: ${JSON.stringify(includeGlobPatterns)}`
+      );
+      console.log(
+        `Using excludeGlobPatterns: ${JSON.stringify(excludeGlobPatterns)}`
+      );
       await enqueueLinks({
         strategy: "all",
         globs: includeGlobPatterns,
