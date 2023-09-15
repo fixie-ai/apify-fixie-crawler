@@ -27,15 +27,8 @@ console.log(
 const dataset = await Actor.openDataset(datasetName);
 
 /** Download the raw file from the given URL and save to the dataset. */
-async function downloadFile(url) {
+async function downloadFile(crawler, url) {
   console.log(`Downloading file: ${url}`);
-  const state = await crawler.useState("downloadedFiles", {
-    downloadedFiles: [],
-  });
-  if (state.downloadedFiles.indexOf(url) != -1) {
-    console.log(`Skipping already downloaded file: ${url}`);
-    return;
-  }
   try {
     const response = await got(url);
     if (!response || !response.ok) {
@@ -51,7 +44,6 @@ async function downloadFile(url) {
       contentLength: response.headers["content-length"],
       timestamp: new Date().toISOString(),
     });
-    state.downloadedFiles.push(url);
   } catch (error) {
     console.error(
       `There was a problem with the fetch operation for ${url}: ${error}`
@@ -131,12 +123,20 @@ const crawler = new PlaywrightCrawler({
 
   // This handler is called when there's an error on the headless browser navigating
   // to a URL.
-  async errorHandler({ request }) {
+  async errorHandler({ crawler, request }) {
     // If there is an error fetching a URL, it might be because the underlying
     // headless browser does not support file downloads. For now, we try to download
     // any file that might be a PDF and add it to the dataset.
+    const state = await crawler.useState("downloadedFiles", {
+      downloadedFiles: [],
+    });
+    if (state.downloadedFiles.indexOf(url) != -1) {
+      console.log(`Skipping already downloaded file: ${url}`);
+      return;
+    }
     if (request.url.match(/\.pdf$/)) {
-      await downloadFile(request.url);
+      await downloadFile(crawler, request.url);
+      state.downloadedFiles.push(url);
       request.noRetry = true; // Don't retry this request.
     }
   },
