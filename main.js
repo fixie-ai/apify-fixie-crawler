@@ -17,15 +17,19 @@ const {
 console.log(`Requested maxCrawlDepth is ${maxCrawlDepth}`);
 console.log(`Requested maxCrawlPages is ${maxCrawlPages}`);
 console.log(`Requested datasetName is ${datasetName}`);
-console.log(`Requested includeGlobPatterns is ${includeGlobPatterns}`);
-console.log(`Requested excludeGlobPatterns is ${excludeGlobPatterns}`);
+console.log(
+  `Requested includeGlobPatterns is ${JSON.stringify(includeGlobPatterns)}`
+);
+console.log(
+  `Requested excludeGlobPatterns is ${JSON.stringify(excludeGlobPatterns)}`
+);
 
 const dataset = await Actor.openDataset(datasetName);
 
 /** Download the raw file from the given URL and save to the dataset. */
 async function downloadFile(url) {
   console.log(`Downloading file: ${url}`);
-  const state = await crawler.useState({ downloadedFiles: Set });
+  const state = await crawler.useState({ downloadedFiles: new Set() });
   if (state.downloadedFiles.has(url)) {
     console.log(`Skipping already downloaded file: ${url}`);
     return;
@@ -136,6 +140,6 @@ const crawler = new PlaywrightCrawler({
   },
 });
 
-console.log(`Starting crawl with startUrls: ${startUrls}`);
+console.log(`Starting crawl with startUrls: ${JSON.stringify(startUrls)}`);
 await crawler.run(startUrls);
 await Actor.exit();
