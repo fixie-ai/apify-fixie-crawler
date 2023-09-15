@@ -34,6 +34,7 @@ if (!includeGlobPatterns || includeGlobPatterns.length == 0) {
   console.warn(
     'Empty includeGlobPatterns - setting excludeGlobPatterns to "**"'
   );
+  includeGlobPatterns = [{ glob: "unused" }]; // We must set this for excludeGlobPatterns to work.
   excludeGlobPatterns = [{ glob: "**" }];
 }
 
