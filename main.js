@@ -41,10 +41,11 @@ const crawler = new PlaywrightCrawler({
     await Actor.pushData({ title, public_url: request.loadedUrl });
     await enqueueLinks();
   },
-  async browserErrorHandler({ request }) {
+  async errorHandler({ request }) {
     // Call downloadFile if the URL matches .pdf
     if (request.url.match(/\.pdf$/)) {
       await downloadFile(request.url);
+      request.noRetry = true; // Don't retry this request.
     }
   },
 });
