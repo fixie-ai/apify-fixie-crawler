@@ -30,9 +30,9 @@ const dataset = await Actor.openDataset(datasetName);
 async function downloadFile(url) {
   console.log(`Downloading file: ${url}`);
   const state = await crawler.useState("downloadedFiles", {
-    downloadedFiles: new Set(),
+    downloadedFiles: [],
   });
-  if (state.downloadedFiles.has(url)) {
+  if (state.downloadFiles.indexOf(url) != -1) {
     console.log(`Skipping already downloaded file: ${url}`);
     return;
   }
@@ -51,7 +51,7 @@ async function downloadFile(url) {
       contentLength: response.headers["content-length"],
       timestamp: new Date().toISOString(),
     });
-    state.downloadedFiles.add(url);
+    state.downloadedFiles.push(url);
   } catch (error) {
     console.error(
       `There was a problem with the fetch operation for ${url}: ${error}`
