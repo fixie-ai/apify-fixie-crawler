@@ -45,5 +45,5 @@ const crawler = new PlaywrightCrawler({
 });
 
 console.log(`Starting crawl with startUrls: ${startUrls}`);
-await crawler.run([startUrls]);
+await crawler.run(startUrls);
 await Actor.exit();
