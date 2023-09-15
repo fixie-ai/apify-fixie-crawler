@@ -29,8 +29,10 @@ const dataset = await Actor.openDataset(datasetName);
 /** Download the raw file from the given URL and save to the dataset. */
 async function downloadFile(url) {
   console.log(`Downloading file: ${url}`);
-  const state = await crawler.useState("downloadedFiles", new Set());
-  if (state.has(url)) {
+  const state = await crawler.useState("downloadedFiles", {
+    downloadedFiles: new Set(),
+  });
+  if (state.downloadedFiles.has(url)) {
     console.log(`Skipping already downloaded file: ${url}`);
     return;
   }
@@ -49,7 +51,7 @@ async function downloadFile(url) {
       contentLength: response.headers["content-length"],
       timestamp: new Date().toISOString(),
     });
-    state.add(url);
+    state.downloadedFiles.add(url);
   } catch (error) {
     console.error(
       `There was a problem with the fetch operation for ${url}: ${error}`
