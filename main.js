@@ -4,7 +4,7 @@ import got from "got";
 
 await Actor.init();
 
-const {
+let {
   startUrls,
   datasetName,
   maxCrawlDepth,
@@ -27,7 +27,7 @@ console.log(
 if (!includeGlobPatterns || includeGlobPatterns.length == 0) {
   // Apify requires that glob patterns be non-empty, so the only way to express
   // an empty include-glob set is to set excludePatterns to "**".
-  console.log(
+  console.warn(
     'Empty includeGlobPatterns - setting excludeGlobPatterns to ["**"]'
   );
   excludeGlobPatterns = ["**"];
@@ -137,7 +137,9 @@ const crawler = new PlaywrightCrawler({
         userData: { depth: curDepth + 1 },
       });
     } else {
-      console.log(`Exceeded max crawl depth ${curDepth} - not following links`);
+      console.warn(
+        `Exceeded max crawl depth ${curDepth} - not following links`
+      );
     }
   },
 
@@ -154,7 +156,7 @@ const crawler = new PlaywrightCrawler({
       state.downloadedFiles &&
       state.downloadedFiles.indexOf(request.url) != -1
     ) {
-      console.log(`Skipping already downloaded file: ${request.url}`);
+      console.warn(`Skipping already downloaded file: ${request.url}`);
       return;
     }
     if (request.url.match(/\.pdf$/)) {
