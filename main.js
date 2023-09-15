@@ -114,6 +114,7 @@ const crawler = new PlaywrightCrawler({
       published: await getPublished(page),
       mime_type: await getMimeType(response),
       content: await page.content(),
+      timestamp: new Date().toISOString(),
     });
 
     await enqueueLinks({
