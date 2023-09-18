@@ -63,8 +63,8 @@ async function downloadFile(crawler, url) {
     await dataset.pushData({
       public_url: url,
       content: b64Data,
-      mimeType: response.headers["content-type"],
-      contentLength: response.headers["content-length"],
+      mime_type: response.headers["content-type"],
+      content_length: response.headers["content-length"],
       encoding: "base64",
       timestamp: new Date().toISOString(),
     });
@@ -131,13 +131,13 @@ const crawler = new PlaywrightCrawler({
     const title = await page.title();
     console.log(`Crawled ${request.loadedUrl}`);
     await dataset.pushData({
-      title,
       public_url: request.loadedUrl,
       title: await page.title(),
       description: await getDescription(page),
       language: await getLanguage(page, response),
       published: await getPublished(page),
       mime_type: await getMimeType(response),
+      content_length: response.headers["content-length"],
       content: await page.content(),
       timestamp: new Date().toISOString(),
     });
