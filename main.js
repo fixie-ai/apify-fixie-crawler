@@ -129,9 +129,9 @@ const crawler = new PlaywrightCrawler({
   // This handler is called on each page navigation.
   async requestHandler({ request, response, page, enqueueLinks }) {
     const title = await page.title();
-    console.log(`Crawled ${request.loadedUrl}`);
+    console.log(`Crawled ${request.url} (which loaded ${request.loadedUrl})`);
     await dataset.pushData({
-      public_url: request.loadedUrl,
+      public_url: request.url,
       title: await page.title(),
       description: await getDescription(page),
       language: await getLanguage(page, response),
