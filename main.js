@@ -128,8 +128,21 @@ const crawler = new PlaywrightCrawler({
 
   // This handler is called on each page navigation.
   async requestHandler({ request, response, page, enqueueLinks }) {
+    const state = await crawler.useState({ downloadedUrls: [] });
+    if (
+      state.downloadedUrls &&
+      state.downloadedUrls.indexOf(request.loadedUrl) != -1
+    ) {
+      console.warn(`Skipping already downloaded page: ${request.loadedUrl}`);
+      return;
+    }
+
     const title = await page.title();
-    console.log(`Crawled ${request.loadedUrl} (original URL ${request.url} - key is ${request.uniqueKey}`);
+    if (request.url != request.loadedUrl) {
+      console.log(`Crawled ${request.loadedUrl} (redirected from ${request.url})`);
+    } else {
+      console.log(`Crawled ${request.loadedUrl}`);
+    }
     await dataset.pushData({
       public_url: request.loadedUrl,
       title: await page.title(),
@@ -141,6 +154,7 @@ const crawler = new PlaywrightCrawler({
       content: await page.content(),
       timestamp: new Date().toISOString(),
     });
+    state.downloadedUrls.push(request.loadedUrl);
 
     // Only follow links if we have not reached the max crawl depth.
     const curDepth = request.userData?.depth || 0;
