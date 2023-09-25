@@ -131,7 +131,7 @@ const crawler = new PlaywrightCrawler({
     const title = await page.title();
     console.log(`Crawled ${request.loadedUrl} (original URL ${request.url} - key is ${request.uniqueKey}`);
     await dataset.pushData({
-      public_url: request.loadedUrl,
+      public_url: request.url,
       title: await page.title(),
       description: await getDescription(page),
       language: await getLanguage(page, response),
