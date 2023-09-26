@@ -180,17 +180,17 @@ const crawler = new PlaywrightCrawler({
     // any file that might be a PDF and add it to the dataset.
 
     // Avoid downloading files multiple times.
-    const state = await crawler.useState({ downloadedFiles: [] });
+    const state = await crawler.useState({ downloadedUrls: [] });
     if (
-      state.downloadedFiles &&
-      state.downloadedFiles.indexOf(request.url) != -1
+      state.downloadedUrls &&
+      state.downloadedUrls.indexOf(request.url) != -1
     ) {
       console.warn(`Skipping already downloaded file: ${request.url}`);
       return;
     }
     if (request.url.match(/\.pdf$/)) {
       await downloadFile(crawler, request.url);
-      state.downloadedFiles.push(request.url);
+      state.downloadedUrls.push(request.url);
       request.noRetry = true; // Don't retry this request.
     }
   },
