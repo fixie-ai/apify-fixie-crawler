@@ -11,6 +11,10 @@ import got from "got";
 
 await Actor.init();
 
+// The number of concurrent browser instances to be used in a single crawl is determined
+// by these settings.
+const MIN_CONCURRENCY = 4;
+
 let {
   startUrls,
   datasetName,
@@ -20,7 +24,6 @@ let {
   excludeGlobPatterns,
 } = await Actor.getInput();
 
-// TODO(mdw): Respect maxCrawlDepth and maxCrawlPages.
 console.log(`Requested maxCrawlDepth is ${maxCrawlDepth}`);
 console.log(`Requested maxCrawlPages is ${maxCrawlPages}`);
 console.log(`Requested datasetName is ${datasetName}`);
@@ -123,6 +126,8 @@ async function getMimeType(response) {
 
 /** This is the main crawler. */
 const crawler = new PlaywrightCrawler({
+  minConcurrency: MIN_CONCURRENCY,
+
   // Maximum number of pages to crawl.
   maxRequestsPerCrawl: maxCrawlPages,
 
