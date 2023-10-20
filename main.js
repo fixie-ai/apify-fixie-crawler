@@ -133,7 +133,7 @@ const crawler = new PlaywrightCrawler({
 
   // This handler is called on each page navigation.
   async requestHandler({ request, response, page, enqueueLinks, proxyInfo }) {
-    console.log(`requestHandler: proxyInfo is {JSON.stringify(proxyInfo)}`);
+    console.log(`requestHandler: proxyInfo is ${JSON.stringify(proxyInfo)}`);
 
     const state = await crawler.useState({ downloadedUrls: [] });
     if (
