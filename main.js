@@ -124,10 +124,16 @@ async function getMimeType(response) {
   return await response.headers["content-type"];
 }
 
+const proxyConfiguration = await Actor.createProxyConfiguration({
+  groups: ['AUTO'],
+  countryCode: 'US',
+});
+
 /** This is the main crawler. */
 const crawler = new PlaywrightCrawler({
-  minConcurrency: MIN_CONCURRENCY,
+  proxyConfiguration,
 
+  minConcurrency: MIN_CONCURRENCY,
   // Maximum number of pages to crawl.
   maxRequestsPerCrawl: maxCrawlPages,
 
