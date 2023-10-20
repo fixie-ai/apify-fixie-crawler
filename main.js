@@ -124,6 +124,7 @@ async function getMimeType(response) {
   return await response.headers["content-type"];
 }
 
+// Configure Apify proxy.
 const proxyConfiguration = await Actor.createProxyConfiguration({
   groups: ['AUTO'],
   countryCode: 'US',
@@ -137,17 +138,16 @@ const crawler = new PlaywrightCrawler({
   // Maximum number of pages to crawl.
   maxRequestsPerCrawl: maxCrawlPages,
 
-  preNavigationHooks: [
-    (crawlingContext, gotoOptions) => {
-      console.log(`Navigating to ${crawlingContext.request.url}`);
-      console.log(`proxyInfo is ${JSON.stringify(crawlingContext.proxyInfo)}`);
-    },
-  ],
+  // This is useful for debugging.
+  // preNavigationHooks: [
+  //   (crawlingContext, gotoOptions) => {
+  //     console.log(`Navigating to ${crawlingContext.request.url}`);
+  //     console.log(`proxyInfo is ${JSON.stringify(crawlingContext.proxyInfo)}`);
+  //   },
+  // ],
 
   // This handler is called on each page navigation.
   async requestHandler({ request, response, page, enqueueLinks, proxyInfo }) {
-    console.log(`requestHandler: proxyInfo is ${JSON.stringify(proxyInfo)}`);
-
     const state = await crawler.useState({ downloadedUrls: [] });
     if (
       state.downloadedUrls &&
