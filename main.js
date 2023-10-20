@@ -132,7 +132,9 @@ const crawler = new PlaywrightCrawler({
   maxRequestsPerCrawl: maxCrawlPages,
 
   // This handler is called on each page navigation.
-  async requestHandler({ request, response, page, enqueueLinks }) {
+  async requestHandler({ request, response, page, enqueueLinks, proxyInfo }) {
+    console.log(`requestHandler: proxyInfo is {JSON.stringify(proxyInfo)}`);
+
     const state = await crawler.useState({ downloadedUrls: [] });
     if (
       state.downloadedUrls &&
@@ -144,7 +146,9 @@ const crawler = new PlaywrightCrawler({
 
     const title = await page.title();
     if (request.url != request.loadedUrl) {
-      console.log(`Crawled ${request.loadedUrl} (redirected from ${request.url})`);
+      console.log(
+        `Crawled ${request.loadedUrl} (redirected from ${request.url})`
+      );
     } else {
       console.log(`Crawled ${request.loadedUrl}`);
     }
