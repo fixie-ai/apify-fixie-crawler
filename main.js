@@ -153,7 +153,13 @@ const crawler = new PlaywrightCrawler({
       console.log(`Crawled ${request.loadedUrl}`);
     }
     await dataset.pushData({
-      public_url: request.loadedUrl,
+      // This *must* be the request.url (as opposed to request.loadedUrl) because we
+      // need a *unique* key to ensure we load all records from the result data set.
+      // While the code above attempts to deduplicate based on loadedUrls, it can't
+      // account for concurrent instances. The request.url on the other hand is
+      // guaranteed to be unique because Apify uses it as the request deduplication
+      // key itself by default: https://crawlee.dev/api/core/class/Request
+      public_url: request.url,
       title: await page.title(),
       description: await getDescription(page),
       language: await getLanguage(page, response),
