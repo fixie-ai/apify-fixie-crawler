@@ -15,6 +15,15 @@ await Actor.init();
 // by these settings.
 const MIN_CONCURRENCY = 4;
 
+// The types of files for which we support simple download.
+const DOWNLOAD_FILE_EXTENSIONS = [
+  "pdf",
+  "doc",
+  "docx",
+  "epub",
+];
+const DOWNLOAD_FILE_REGEX = `\.(${DOWNLOAD_FILE_EXTENSIONS.join("|")})\$`
+
 let {
   startUrls,
   datasetName,
@@ -216,10 +225,12 @@ const crawler = new PlaywrightCrawler({
       console.warn(`Skipping already downloaded file: ${request.url}`);
       return;
     }
-    if (request.url.match(/\.pdf$/)) {
+    if (request.url.match(DOWNLOAD_FILE_REGEX)) {
       await downloadFile(crawler, request.url);
       state.downloadedUrls.push(request.url);
       request.noRetry = true; // Don't retry this request.
+    } else {
+      console.log(`Not downloading ${request.url} becuase its extension is not whitelisted by the Fixie actor.`)
     }
   },
 });
