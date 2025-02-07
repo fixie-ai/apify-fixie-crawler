@@ -35,6 +35,10 @@ let {
   excludeGlobPatterns,
 } = await Actor.getInput();
 
+// Our APIs interpret "maxDepth = 1" as "only crawl the direct source" but
+// Playwright uses 0 for this meaning. This corrects the off-by-one difference.
+maxCrawlDepth = Math.max(maxCrawlDepth - 1, 0);
+
 console.log(`Requested maxCrawlDepth is ${maxCrawlDepth}`);
 console.log(`Requested maxCrawlPages is ${maxCrawlPages}`);
 console.log(`Requested datasetName is ${datasetName}`);
