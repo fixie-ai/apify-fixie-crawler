@@ -35,6 +35,9 @@ let {
   excludeGlobPatterns,
 } = await Actor.getInput();
 
+// Our APIs use depth of 1 for a single page while Playwright uses 0.
+maxCrawlDepth = max(maxCrawlDepth - 1, 0)
+
 console.log(`Requested maxCrawlDepth is ${maxCrawlDepth}`);
 console.log(`Requested maxCrawlPages is ${maxCrawlPages}`);
 console.log(`Requested datasetName is ${datasetName}`);
