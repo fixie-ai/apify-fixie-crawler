@@ -23,6 +23,7 @@ const DOWNLOAD_FILE_EXTENSIONS = [
   "epub",
   "ppt",
   "pptx",
+  "txt",
 ];
 const DOWNLOAD_FILE_REGEX = `\.(${DOWNLOAD_FILE_EXTENSIONS.join("|")})\$`
 
