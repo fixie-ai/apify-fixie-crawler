@@ -170,7 +170,7 @@ function getMimeType(contentType, fileName) {
 };
 
 function getFileName(response) {
-  const contentDisposition = response.headers.get('Content-Disposition');
+  const contentDisposition = response.headers['content-disposition'];
   if (!contentDisposition) {
     return undefined;
   }
