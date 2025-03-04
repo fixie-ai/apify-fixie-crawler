@@ -71,7 +71,6 @@ const dataset = await Actor.openDataset(datasetName);
 /** Download the raw file from the given URL and save to the dataset. */
 async function downloadFile(crawler, url) {
   console.log(`Downloading file: ${url}`);
-  
   try {
     const response = await got(url);
     if (!response || !response.ok) {
@@ -163,11 +162,11 @@ function getMimeType(contentType, fileName) {
       case 'svg': return 'image/svg+xml';
       case 'zip': return 'application/zip';
       case 'rar': return 'application/x-rar-compressed';
-      default: return undefined;
+      default: return 'application/octet-stream';
     }
   }
 
-  return undefined;
+  return 'application/octet-stream';
 };
 
 function getFileName(response) {
@@ -223,9 +222,6 @@ const crawler = new PlaywrightCrawler({
     } else {
       console.log(`Crawled ${request.loadedUrl}`);
     }
-
-    
-    
     await dataset.pushData({
       // This *must* be the request.url (as opposed to request.loadedUrl) because we
       // need a *unique* key to ensure we load all records from the result data set.
