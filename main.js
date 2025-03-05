@@ -100,7 +100,7 @@ async function downloadFile(crawler, url) {
  * Note that this "response" object is from got, not Playwright!
  */
 function getMimeTypeForDownload(response, url) {
-  const contentType = response.headers['content-type']
+  const contentType = response.headers['content-type'];
   // File hosting sites often make no promises about the content of hosted files
   // by labeling them as application/octet-stream. In such cases, we try to infer
   // the intended mime type from the fileName.
@@ -118,7 +118,7 @@ function getMimeTypeForDownload(response, url) {
   }
 
   if (!filename) {
-    filename = `${url}` // Be really sure url is a string
+    filename = `${url}`; // Be really sure url is a string
   }
 
   const extension = filename.split('.').pop().toLowerCase();
@@ -144,7 +144,7 @@ function getMimeTypeForDownload(response, url) {
       console.log(`Failed to determine mime_type for ${url}. contentType=${contentType}, contentDisposition=${contentDisposition}, filename=${filename}, extension=${extension}`)
       return 'application/octet-stream';
   }
-};
+}
 
 /** Return the value of the given meta tag. */
 async function getMetaTag(page, name) {
@@ -228,6 +228,10 @@ const crawler = new PlaywrightCrawler({
     } else {
       console.log(`Crawled ${request.loadedUrl}`);
     }
+
+    const contentType = await response.headerValue('content-type');
+    const mimeType = contentType ? contentType.split(';')[0] : contentType;
+    
     await dataset.pushData({
       // This *must* be the request.url (as opposed to request.loadedUrl) because we
       // need a *unique* key to ensure we load all records from the result data set.
@@ -240,8 +244,8 @@ const crawler = new PlaywrightCrawler({
       description: await getDescription(page),
       language: await getLanguage(page, response),
       published: await getPublished(page),
-      mime_type: await response.headerValue("content-type"),
-      content_length: await response.headerValue("content-length"),
+      mime_type: mimeType,
+      content_length: await response.headerValue('content-length'),
       content: await page.content(),
       timestamp: new Date().toISOString(),
     });
