@@ -24,6 +24,7 @@ const DOWNLOAD_FILE_EXTENSIONS = [
   "ppt",
   "pptx",
   "txt",
+  "md",
 ];
 const DOWNLOAD_FILE_REGEX = `\.(${DOWNLOAD_FILE_EXTENSIONS.join("|")})\$`
 
@@ -153,6 +154,7 @@ function getMimeType(contentType, fileName) {
       case 'txt': return 'text/plain';
       case 'csv': return 'text/csv';
       case 'html': return 'text/html';
+      case 'md': return 'text/markdown';
       case 'json': return 'application/json';
       case 'epub': return 'application/epub+zip';
       case 'jpg': case 'jpeg': return 'image/jpeg';
