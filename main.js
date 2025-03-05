@@ -83,8 +83,8 @@ async function downloadFile(crawler, url) {
     await dataset.pushData({
       public_url: url,
       content: b64Data,
-      mime_type: getMimeType(response.headers["content-type"], getFileName(response) || `${url}`),
-      content_length: response.headers["content-length"],
+      mime_type: getMimeType(await response.headers["content-type"], getFileName(response) || `${url}`),
+      content_length: await response.headers["content-length"],
       encoding: "base64",
       timestamp: new Date().toISOString(),
     });
@@ -164,15 +164,18 @@ function getMimeType(contentType, fileName) {
       case 'svg': return 'image/svg+xml';
       case 'zip': return 'application/zip';
       case 'rar': return 'application/x-rar-compressed';
-      default: return 'application/octet-stream';
+      default:
+        console.log(`Unable to determine mimeType for ${fileName}. contentType=${contentType}, extension=${extension}`)
+        return 'application/octet-stream';
     }
   }
 
+  console.log(`No filename present while determining mimeType. Got contentType=${contentType}, fileName=${fileName}`)
   return 'application/octet-stream';
 };
 
 function getFileName(response) {
-  const contentDisposition = response.headers['content-disposition'];
+  const contentDisposition = await response.headers['content-disposition'];
   if (!contentDisposition) {
     return undefined;
   }
@@ -236,8 +239,8 @@ const crawler = new PlaywrightCrawler({
       description: await getDescription(page),
       language: await getLanguage(page, response),
       published: await getPublished(page),
-      mime_type: await getMimeType(response.headers["content-type"], getFileName(response) || `${request.url}`),
-      content_length: response.headers["content-length"],
+      mime_type: await getMimeType(await response.headers["content-type"], getFileName(response) || `${request.url}`),
+      content_length: await response.headers["content-length"],
       content: await page.content(),
       timestamp: new Date().toISOString(),
     });
