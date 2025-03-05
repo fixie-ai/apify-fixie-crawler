@@ -164,10 +164,13 @@ function getMimeType(contentType, fileName) {
       case 'svg': return 'image/svg+xml';
       case 'zip': return 'application/zip';
       case 'rar': return 'application/x-rar-compressed';
-      default: return 'application/octet-stream';
+      default:
+        console.log(`Unable to determine mimeType for ${fileName}. contentType=${contentType}, extension=${extension}`)
+        return 'application/octet-stream';
     }
   }
 
+  console.log(`No filename present while determining mimeType. Got contentType=${contentType}, fileName=${fileName}`)
   return 'application/octet-stream';
 };
 
