@@ -83,8 +83,8 @@ async function downloadFile(crawler, url) {
     await dataset.pushData({
       public_url: url,
       content: b64Data,
-      mime_type: getMimeType(await response.headers["content-type"], (await getFileName(response)) || `${url}`),
-      content_length: await response.headers["content-length"],
+      mime_type: getMimeTypeForDownload(response, url),
+      content_length: response.headers["content-length"],
       encoding: "base64",
       timestamp: new Date().toISOString(),
     });
@@ -94,6 +94,57 @@ async function downloadFile(crawler, url) {
     );
   }
 }
+
+/**
+ * Tries to determine the mime_type for a downloaded file, accounting for file-hosting sites.
+ * Note that this "response" object is from got, not Playwright!
+ */
+function getMimeTypeForDownload(response, url) {
+  const contentType = response.headers['content-type']
+  // File hosting sites often make no promises about the content of hosted files
+  // by labeling them as application/octet-stream. In such cases, we try to infer
+  // the intended mime type from the fileName.
+  if (contentType && contentType !== 'application/octet-stream') {
+    return contentType.split(';')[0];
+  }
+  
+  const contentDisposition = response.headers.get('content-disposition');
+  let filename = undefined;
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^";]+)"?/)
+    if (match && match[1]) {
+      filename = match[1];
+    }
+  }
+
+  if (!filename) {
+    filename = `${url}` // Be really sure url is a string
+  }
+
+  const extension = filename.split('.').pop().toLowerCase();
+  switch (extension) {
+    case 'pdf': return 'application/pdf';
+    case 'doc': case 'docx': return 'application/msword';
+    case 'xls': case 'xlsx': return 'application/vnd.ms-excel';
+    case 'ppt': case 'pptx': return 'application/vnd.ms-powerpoint';
+    case 'txt': return 'text/plain';
+    case 'csv': return 'text/csv';
+    case 'html': return 'text/html';
+    case 'md': return 'text/markdown';
+    case 'json': return 'application/json';
+    case 'epub': return 'application/epub+zip';
+    case 'jpg': case 'jpeg': return 'image/jpeg';
+    case 'png': return 'image/png';
+    case 'gif': return 'image/gif';
+    case 'bmp': return 'image/bmp';
+    case 'svg': return 'image/svg+xml';
+    case 'zip': return 'application/zip';
+    case 'rar': return 'application/x-rar-compressed';
+    default:
+      console.log(`Failed to determine mime_type for ${url}. contentType=${contentType}, contentDisposition=${contentDisposition}, filename=${filename}, extension=${extension}`)
+      return 'application/octet-stream';
+  }
+};
 
 /** Return the value of the given meta tag. */
 async function getMetaTag(page, name) {
@@ -117,7 +168,7 @@ async function getDescription(page) {
 
 /** Get language for this page. */
 async function getLanguage(page, response) {
-  const header = await response.headers["content-language"];
+  const header = await response.headerValue("content-language");
   const htmlTagLang = await page.$eval("html", (element) => element.lang);
   return (
     header ||
@@ -136,54 +187,9 @@ async function getPublished(page) {
   );
 }
 
-function getMimeType(contentType, fileName) {
-  // File hosting sites often make no promises about the content of hosted files
-  // by labeling them as application/octet-stream. In such cases, we try to infer
-  // the intended mime type from the fileName.
-  if (contentType && contentType !== 'application/octet-stream') {
-    return contentType.split(';')[0];
-  }
-
-  if (fileName) {
-    const extension = fileName.split('.').pop().toLowerCase();
-    switch (extension) {
-      case 'pdf': return 'application/pdf';
-      case 'doc': case 'docx': return 'application/msword';
-      case 'xls': case 'xlsx': return 'application/vnd.ms-excel';
-      case 'ppt': case 'pptx': return 'application/vnd.ms-powerpoint';
-      case 'txt': return 'text/plain';
-      case 'csv': return 'text/csv';
-      case 'html': return 'text/html';
-      case 'md': return 'text/markdown';
-      case 'json': return 'application/json';
-      case 'epub': return 'application/epub+zip';
-      case 'jpg': case 'jpeg': return 'image/jpeg';
-      case 'png': return 'image/png';
-      case 'gif': return 'image/gif';
-      case 'bmp': return 'image/bmp';
-      case 'svg': return 'image/svg+xml';
-      case 'zip': return 'application/zip';
-      case 'rar': return 'application/x-rar-compressed';
-      default:
-        console.log(`Unable to determine mimeType for ${fileName}. contentType=${contentType}, extension=${extension}`)
-        return 'application/octet-stream';
-    }
-  }
-
-  console.log(`No filename present while determining mimeType. Got contentType=${contentType}, fileName=${fileName}`)
-  return 'application/octet-stream';
-};
-
-async function getFileName(response) {
-  const contentDisposition = await response.headers['content-disposition'];
-  if (!contentDisposition) {
-    return undefined;
-  }
-  const filenameMatch = contentDisposition.match(/filename="?([^";]+)"?/);
-  if (filenameMatch && filenameMatch[1]) {
-    return filenameMatch[1];
-  }
-  return undefined;
+/** Get the MIME type of this response. */
+async function getMimeType(response) {
+  return await response.headerValue("content-type");
 }
 
 // Configure Apify proxy.
@@ -239,8 +245,8 @@ const crawler = new PlaywrightCrawler({
       description: await getDescription(page),
       language: await getLanguage(page, response),
       published: await getPublished(page),
-      mime_type: await getMimeType(await response.headers["content-type"], (await getFileName(response)) || `${request.url}`),
-      content_length: await response.headers["content-length"],
+      mime_type: await getMimeType(response),
+      content_length: await response.headerValue("content-length"),
       content: await page.content(),
       timestamp: new Date().toISOString(),
     });
