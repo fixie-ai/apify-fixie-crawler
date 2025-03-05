@@ -83,7 +83,7 @@ async function downloadFile(crawler, url) {
     await dataset.pushData({
       public_url: url,
       content: b64Data,
-      mime_type: getMimeType(await response.headers["content-type"], getFileName(response) || `${url}`),
+      mime_type: getMimeType(await response.headers["content-type"], (await getFileName(response)) || `${url}`),
       content_length: await response.headers["content-length"],
       encoding: "base64",
       timestamp: new Date().toISOString(),
@@ -174,7 +174,7 @@ function getMimeType(contentType, fileName) {
   return 'application/octet-stream';
 };
 
-function getFileName(response) {
+async function getFileName(response) {
   const contentDisposition = await response.headers['content-disposition'];
   if (!contentDisposition) {
     return undefined;
@@ -239,7 +239,7 @@ const crawler = new PlaywrightCrawler({
       description: await getDescription(page),
       language: await getLanguage(page, response),
       published: await getPublished(page),
-      mime_type: await getMimeType(await response.headers["content-type"], getFileName(response) || `${request.url}`),
+      mime_type: await getMimeType(await response.headers["content-type"], (await getFileName(response)) || `${request.url}`),
       content_length: await response.headers["content-length"],
       content: await page.content(),
       timestamp: new Date().toISOString(),
