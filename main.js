@@ -108,7 +108,7 @@ function getMimeTypeForDownload(response, url) {
     return contentType.split(';')[0];
   }
   
-  const contentDisposition = response.headers.get('content-disposition');
+  const contentDisposition = response.headers['content-disposition'];
   let filename = undefined;
   if (contentDisposition) {
     const match = contentDisposition.match(/filename="?([^";]+)"?/)
