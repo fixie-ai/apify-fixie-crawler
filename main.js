@@ -187,11 +187,6 @@ async function getPublished(page) {
   );
 }
 
-/** Get the MIME type of this response. */
-async function getMimeType(response) {
-  return await response.headerValue("content-type");
-}
-
 // Configure Apify proxy.
 const proxyConfiguration = await Actor.createProxyConfiguration({
   groups: ['AUTO'],
@@ -245,7 +240,7 @@ const crawler = new PlaywrightCrawler({
       description: await getDescription(page),
       language: await getLanguage(page, response),
       published: await getPublished(page),
-      mime_type: await getMimeType(response),
+      mime_type: await response.headerValue("content-type"),
       content_length: await response.headerValue("content-length"),
       content: await page.content(),
       timestamp: new Date().toISOString(),
